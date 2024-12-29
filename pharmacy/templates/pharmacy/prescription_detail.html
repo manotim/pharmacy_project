@@ -1,0 +1,12 @@
+{% extends "pharmacy/base.html" %}
+{% block content %}
+<h1>Prescription Details</h1>
+<p><strong>Drug:</strong> {{ prescription.drug.name }}</p>
+<p><strong>Prescribed To:</strong> {{ prescription.prescribed_to }}</p>
+<p><strong>Dosage:</strong> {{ prescription.dosage }}</p>
+<p><strong>Prescribed At:</strong> {{ prescription.prescribed_at }}</p>
+<p><strong>Notes:</strong> {{ prescription.notes }}</p>
+<a href="{% url 'user-prescription-list' %}" class="btn btn-secondary">Back to Prescriptions</a>
+<a href="{% url 'prescription-update' prescription.id %}" class="btn btn-warning">Edit</a>
+<a href="{% url 'prescription-delete' prescription.id %}" class="btn btn-danger">Delete</a>
+{% endblock %}

@@ -1,0 +1,108 @@
+{% extends "pharmacy/base.html" %}
+{% load static %}
+
+{% block content %}
+<div 
+    class="landing-image text-center text-white d-flex align-items-center justify-content-center"
+    style="
+        background: url('{% static 'images/doctor1.jpeg' %}') no-repeat center center/cover;
+        height: 100vh;
+    "
+>
+    <div class="overlay" style="background: rgba(0, 0, 0, 0.5); position: absolute; top: 0; left: 0; width: 100%; height: 100%;"></div>
+    <div class="z-index-1" style="position: relative;">
+        <h1 style='color: #fff;'>Affordable medicines for a healthier tomorrow</h1>
+        <p class="lead">Explore our range of quality and affordable drugs tailored to your needs</p>
+        <a href="{% url 'register' %}" class="btn register-btn btn-lg" style= 'background-color: #cc23a2; color: #fff;'>Register Now</a>
+    </div>
+</div>
+
+
+
+
+
+<div class="container my-4">
+ 
+
+  </div>
+
+  <div class="row">
+      {% for drug in posts %}
+      <div class="col-md-3 mb-4">
+          <div class="card h-100">
+              <img 
+                  src="{{ drug.image_url }}" 
+                  class="card-img-top" 
+                  alt="{{ drug.name }}" 
+                  style="height: 200px; object-fit: cover;"
+              >
+              <div class="card-body">
+                  <h5 class="card-title">{{ drug.name }}</h5>
+                  <a href="{% url 'drugs-by-type' drug.type.id %}" class="btn btn-outline-primary btn-sm me-2 mb-2">
+                    {{ drug.type.name }}
+                </a>
+                
+                
+                  <p class="card-text" style="height: 50px; overflow: hidden; text-overflow: ellipsis;">
+                      {{ drug.description }}
+                  </p>
+                  <h6 class="card-text text-primary">KSh {{ drug.price }}</h6>
+                  <span class="badge 
+                      {% if drug.stock_status == 'in_stock' %}
+                          bg-success
+                      {% elif drug.stock_status == 'sold' %}
+                          bg-secondary
+                      {% else %}
+                          bg-danger
+                      {% endif %}">
+                      {{ drug.get_stock_status_display }}
+                  </span>
+                  <a href="{% url 'add-to-cart' drug.id %}" class="btn btn-success btn-sm add-to-cart">Add to Cart</a>
+              </div>
+          </div>
+      </div>
+      {% endfor %}
+  </div>
+</div>
+
+<script>
+  document.addEventListener("DOMContentLoaded", function() {
+      // Attach event listeners to all "Add to Cart" buttons
+      document.querySelectorAll(".add-to-cart").forEach(function(button) {
+          button.addEventListener("click", function(e) {
+              e.preventDefault(); // Prevent default link behavior
+              const url = this.href; // Get the Add to Cart URL
+
+              // Send an AJAX request
+              fetch(url, {
+                  method: "GET",
+                  headers: {
+                      "X-Requested-With": "XMLHttpRequest" // Indicates an AJAX request
+                  }
+              })
+              .then(response => {
+                  if (!response.ok) {
+                      throw new Error("Network response was not ok");
+                  }
+                  return response.json();
+              })
+              .then(data => {
+                  if (data.success) {
+                      // Update the cart counter
+                      const cartCounter = document.getElementById("cart-counter");
+                      cartCounter.textContent = data.cart_count;
+                  } else {
+                      console.error("Error:", data.message); // Log the error message
+                  }
+              })
+              .catch(error => {
+                  console.error("Error:", error);
+              });
+          });
+      });
+  });
+</script>
+
+
+
+{% endblock content %}

@@ -1,0 +1,78 @@
+{% extends "pharmacy/base.html" %}
+
+{% block content %}
+<h4>Drugs in {{ type.name }}</h4>
+<div class="row">
+    {% for drug in drugs %}
+    <div class="col-md-3 mb-4">
+        <div class="card h-100">
+            <img 
+                src="{{ drug.image_url }}" 
+                class="card-img-top" 
+                alt="{{ drug.name }}" 
+                style="height: 200px; object-fit: cover;"
+            >
+            <div class="card-body">
+                <h5 class="card-title">{{ drug.name }}</h5>
+                <p class="card-text">{{ drug.description }}</p>
+                <h6 class="card-text text-primary">KSh {{ drug.price }}</h6>
+                <span class="badge 
+                    {% if drug.stock_status == 'in_stock' %}
+                        bg-success
+                    {% elif drug.stock_status == 'sold' %}
+                        bg-secondary
+                    {% else %}
+                        bg-danger
+                    {% endif %}">
+                    {{ drug.get_stock_status_display }}
+                </span>
+                <a href="{% url 'add-to-cart' drug.id %}" class="btn btn-success btn-sm add-to-cart">Add to Cart</a>
+            </div>
+        </div>
+    </div>
+    {% empty %}
+    <p>No drugs found for this type.</p>
+    {% endfor %}
+</div>
+
+<script>
+document.addEventListener("DOMContentLoaded", function() {
+    // Attach event listeners to all "Add to Cart" buttons
+    document.querySelectorAll(".add-to-cart").forEach(function(button) {
+        button.addEventListener("click", function(e) {
+            e.preventDefault(); // Prevent default link behavior
+            const url = this.href; // Get the Add to Cart URL
+
+            // Send an AJAX request
+            fetch(url, {
+                method: "GET",
+                headers: {
+                    "X-Requested-With": "XMLHttpRequest" // Indicates an AJAX request
+                }
+            })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error("Network response was not ok");
+                }
+                return response.json();
+            })
+            .then(data => {
+                if (data.success) {
+                    // Update the cart counter
+                    const cartCounter = document.getElementById("cart-counter");
+                    if (cartCounter) {
+                        cartCounter.textContent = data.cart_count;
+                    }
+                } else {
+                    console.error("Error:", data.message); // Log the error message
+                }
+            })
+            .catch(error => {
+                console.error("Error:", error);
+            });
+        });
+    });
+});
+</script>
+
+{% endblock content %}

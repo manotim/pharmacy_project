@@ -1,0 +1,40 @@
+{% extends "pharmacy/base.html" %}
+
+{% block content %}
+<div class="container my-4">
+    <h3>Your Cart</h3>
+    {% if drugs %}
+        <table class="table table-bordered" style="border: 2px solid #dee2e6; border-collapse: collapse;">
+            <thead>
+                <tr>
+                    <th>Image</th>
+                    <th>Drug Name</th>
+                    <th>Price (KSh)</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for drug in drugs %}
+                <tr>
+                    <td><img src="{{ drug.image_url }}" alt="{{ drug.name }}" class="img-thumbnail" style="width: 100px; height: auto;"></td>
+                    <td>{{ drug.name }}</td>
+                    <td>{{ drug.price }}</td>
+                    <td>
+                        <a href="{% url 'remove-from-cart' drug.id %}" class="btn btn-danger btn-sm">Remove</a>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+            <tfoot>
+                <tr>
+                    <td colspan="2"><strong>Total</strong></td>
+                    <td colspan="2"><strong>KSh {{ total_price }}</strong></td>
+                </tr>
+            </tfoot>
+        </table>
+        <a href="{% url 'pay-now' %}" class="btn btn-success btn-lg mt-3">Checkout</a>
+    {% else %}
+        <p>Your cart is empty.</p>
+    {% endif %}
+</div>
+{% endblock %}

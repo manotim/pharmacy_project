@@ -1,0 +1,10 @@
+{% extends "pharmacy/base.html" %}
+{% block content %}
+<h1>{% if object %}Edit Prescription{% else %}Add Prescription{% endif %}</h1>
+<form method="post">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <button type="submit" class="btn btn-success">Save</button>
+</form>
+<a href="{% url 'user-prescription-list' %}" class="btn btn-secondary">Back to Prescriptions</a>
+{% endblock %}

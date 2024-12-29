@@ -1,0 +1,10 @@
+{% extends "pharmacy/base.html" %}
+{% block content %}
+<h1>{% if object %}Edit Order{% else %}Create New Order{% endif %}</h1>
+<form method="post">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <button type="submit" class="btn btn-success">Save</button>
+</form>
+<a href="{% url 'order-list' %}" class="btn btn-secondary">Back to Orders</a>
+{% endblock %}

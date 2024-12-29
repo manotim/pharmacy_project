@@ -1,0 +1,43 @@
+{% extends 'pharmacy/base.html' %}
+
+{% block content %}
+    <h1>Drug Expiry Analysis</h1>
+    <div style="width: 630px; height: 630px; margin: 0 auto;">
+        <canvas id="drugExpiryChart"></canvas>
+    </div>
+    <script>
+        const ctx = document.getElementById('drugExpiryChart').getContext('2d');
+        const data = {
+            labels: {{ chart_data.labels|safe }},
+            datasets: [{
+                label: 'Drug Expiry Analysis',
+                data: {{ chart_data.values|safe }},
+                backgroundColor: [
+                    'rgba(255, 99, 132, 0.6)', // Expired drugs (red)
+                    'rgba(255, 206, 86, 0.6)', // Expiring in 5 days (yellow)
+                    'rgba(75, 192, 192, 0.6)'  // Yet to expire (green)
+                ],
+                borderColor: [
+                    'rgba(255, 99, 132, 1)',   // Expired drugs (red)
+                    'rgba(255, 206, 86, 1)',   // Expiring in 5 days (yellow)
+                    'rgba(75, 192, 192, 1)'    // Yet to expire (green)
+                ],
+                borderWidth: 1
+            }]
+        };
+
+        new Chart(ctx, {
+            type: 'pie',
+            data: data,
+            options: {
+                responsive: true,
+                maintainAspectRatio: false, // Allows precise control via container
+                plugins: {
+                    legend: {
+                        position: 'top',
+                    }
+                }
+            }
+        });
+    </script>
+{% endblock %}

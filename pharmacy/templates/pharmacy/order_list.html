@@ -1,0 +1,46 @@
+{% extends "pharmacy/base.html" %}
+
+{% block content %}
+<div class="container my-5">
+    <h1 class="mb-4">Orders</h1>
+    <a href="{% url 'order-create' %}" class="btn btn-primary mb-3">Create New Order</a>
+    <div class="table-responsive">
+        <table class="table table-bordered table-striped">
+            <thead class="thead-dark">
+                <tr>
+                    <th>ID</th>
+                    <th>Supplier</th>
+                    <th>Drug</th>
+                    <th>Quantity</th>
+                    <th>Status</th>
+                    <th>Order Date</th>
+                    <th>Expected Delivery</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for order in orders %}
+                <tr>
+                    <td>{{ order.id }}</td>
+                    <td>{{ order.supplier.name }}</td>
+                    <td>{{ order.drug.name }}</td>
+                    <td>{{ order.quantity }}</td>
+                    <td>
+                        <span class="badge {% if order.status == 'Pending' %}badge-warning{% elif order.status == 'Completed' %}badge-success{% else %}badge-secondary{% endif %}">
+                            {{ order.status }}
+                        </span>
+                    </td>
+                    <td>{{ order.order_date }}</td>
+                    <td>{{ order.expected_delivery_date }}</td>
+                    <td>
+                        <a href="{% url 'order-update' order.id %}" class="btn btn-sm btn-warning">
+                            <i class="fas fa-edit"></i> Edit
+                        </a>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}
