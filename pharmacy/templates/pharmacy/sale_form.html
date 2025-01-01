@@ -1,0 +1,10 @@
+{% extends "pharmacy/base.html" %}
+{% block content %}
+<h1>Create Sale</h1>
+<form method="post">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <button type="submit" class="btn btn-success">Save</button>
+</form>
+<a href="{% url 'sale-list' %}" class="btn btn-secondary">Back to Sales</a>
+{% endblock %}

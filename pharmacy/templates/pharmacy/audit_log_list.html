@@ -1,0 +1,41 @@
+{% extends "pharmacy/base.html" %}
+{% block content %}
+<h1>Audit Logs</h1>
+<table class="table">
+    <thead>
+        <tr>
+            <th>ID</th>
+            <th>Drug</th>
+            <th>Action</th>
+            <th>Quantity Changed</th>
+            <th>Performed By</th>
+            <th>Performed At</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for log in audit_logs %}
+        <tr>
+            <td>{{ log.id }}</td>
+            <td>{{ log.drug.name }}</td>
+            <td>{{ log.action }}</td>
+            <td>{{ log.quantity_changed }}</td>
+            <td>{{ log.performed_by }}</td>
+            <td>{{ log.performed_at }}</td>
+        </tr>
+        {% empty %}
+        <tr>
+            <td colspan="6">No logs available.</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+<div class="pagination">
+    {% if audit_logs.has_previous %}
+    <a href="?page={{ audit_logs.previous_page_number }}">Previous</a>
+    {% endif %}
+    <span>Page {{ audit_logs.number }} of {{ audit_logs.paginator.num_pages }}</span>
+    {% if audit_logs.has_next %}
+    <a href="?page={{ audit_logs.next_page_number }}">Next</a>
+    {% endif %}
+</div>
+{% endblock %}

@@ -94,3 +94,11 @@ body {
   .register-btn {
     background-color: #cc23a2;
   }
+
+  .navbar .dropdown:hover .dropdown-menu {
+    display: block;
+  }
+  .navbar .dropdown-toggle::after {
+    display: inline-block;
+  }
+  

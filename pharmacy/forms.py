@@ -56,3 +56,8 @@ class StockAlertForm(forms.ModelForm):
     class Meta:
         model = StockAlert
         fields = '__all__'
+        
+class SaleForm(forms.ModelForm):
+    class Meta:
+        model = Sale
+        fields = ['drug', 'quantity', 'total_price']

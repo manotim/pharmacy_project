@@ -36,6 +36,7 @@ class Drug(models.Model):
     cart = models.ForeignKey(Cart, on_delete=models.CASCADE, related_name='drugs', null=True, blank=True)
     price = models.DecimalField(max_digits=10, decimal_places=2)
     expiry = models.DateTimeField()
+    stock = models.PositiveIntegerField(default=0)
     created_at = models.DateTimeField(auto_now_add=True)
     stock_status = models.CharField(
         max_length=15,

@@ -8,7 +8,10 @@ from .views import (
     PrescriptionDetailView, 
     PrescriptionCreateView, 
     PrescriptionUpdateView, 
-    PrescriptionDeleteView
+    PrescriptionDeleteView,
+    AuditLogListView,
+    SaleListView,
+    SaleCreateView
 )
 
 urlpatterns = [
@@ -35,5 +38,9 @@ urlpatterns = [
     path('prescriptions/add/', PrescriptionCreateView.as_view(), name='prescription-create'),
     path('prescriptions/<uuid:pk>/edit/', PrescriptionUpdateView.as_view(), name='prescription-update'),
     path('prescriptions/<uuid:pk>/delete/', PrescriptionDeleteView.as_view(), name='prescription-delete'),
-    #uditLog, Sale, Patient, Discount, StockAlert
+    #uditLog, 
+     path("audit-logs/", AuditLogListView.as_view(), name="audit-log-list"),
+    #  Sale, Patient, Discount, StockAlert
+     path("sales/", SaleListView.as_view(), name="sale-list"),
+    path("sales/create/", SaleCreateView.as_view(), name="sale-create"),
 ]

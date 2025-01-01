@@ -11,7 +11,7 @@ from django.views.generic import CreateView, ListView, UpdateView, DeleteView, D
 from django.views.generic import ListView, CreateView, UpdateView
 from .models import Supplier, Order, Prescription, AuditLog, Sale, Patient, Discount, StockAlert
 from .forms import SupplierForm, OrderForm, PrescriptionForm, AuditLogForm, SaleForm, PatientForm, DiscountForm, StockAlertForm
-
+from .utils import create_audit_log
 
 def home(request):
     cart_count = 0
@@ -240,3 +240,79 @@ class PrescriptionCreateView(LoginRequiredMixin, CreateView):
     form_class = PrescriptionForm
     template_name = "pharmacy/prescription_form.html"
     success_url = reverse_lazy("user-prescription-list")
+
+
+
+class AuditLogListView(ListView):
+    model = AuditLog
+    template_name = "pharmacy/audit_log_list.html"
+    context_object_name = "audit_logs"
+    paginate_by = 10  # Optional: paginate the logs
+    
+    def get_queryset(self):
+        queryset = super().get_queryset()
+        print(queryset)  # Log the queryset in the console
+        return queryset
+
+
+    def get_queryset(self):
+        # Optionally filter logs based on query parameters (e.g., drug, performed_by)
+        queryset = super().get_queryset()
+        drug_id = self.request.GET.get("drug")
+        performed_by = self.request.GET.get("performed_by")
+        if drug_id:
+            queryset = queryset.filter(drug_id=drug_id)
+        if performed_by:
+            queryset = queryset.filter(performed_by=performed_by)
+        return queryset.order_by("-performed_at")  # Latest logs first
+
+
+def update_stock(request, drug_id, quantity_change):
+    drug = get_object_or_404(Drug, id=drug_id)
+    previous_stock = drug.stock
+    drug.stock += quantity_change
+    drug.save()
+
+    action = "updated" if previous_stock != drug.stock else "no change"
+    create_audit_log(
+        drug=drug,
+        action=action,
+        quantity_changed=quantity_change,
+        performed_by=request.user.username,  # Ensure user is logged in
+    )
+
+    messages.success(request, f"Stock updated for {drug.name}.")
+    return redirect("audit-log-list")
+
+class SaleListView(ListView):
+    model = Sale
+    template_name = "pharmacy/sale_list.html"
+    context_object_name = "sales"
+    paginate_by = 10  # Optional pagination
+
+class SaleCreateView(CreateView):
+    model = Sale
+    form_class = SaleForm
+    template_name = "pharmacy/sale_form.html"
+    success_url = reverse_lazy("sale-list")
+
+    def form_valid(self, form):
+        sale = form.save(commit=False)
+        drug = sale.drug
+
+        if drug.stock < sale.quantity:
+            form.add_error('quantity', 'Insufficient stock available.')
+            return self.form_invalid(form)
+
+        drug.stock -= sale.quantity
+        drug.save()
+
+        # Log the sale
+        create_audit_log(
+            drug=drug,
+            action="sold",
+            quantity_changed=-sale.quantity,
+            performed_by=self.request.user.username
+        )
+        sale.save()  # Save the sale instance after stock adjustment
+        return super().form_valid(form)
